@@ -8,6 +8,5 @@
 
 ### Video Demonstration
 
-<a href="[video_url](https://youtu.be/-OwFQcS6Rvc)">
-  <img src="[thumbnail_image_url](https://cdn.freebiesupply.com/logos/large/2x/nfl-1-logo-png-transparent.png)" alt="NFL Wordle Demo" width="300" height="200">
-</a>
+[![NFL Demo]([thumbnail_image_url](https://cdn.freebiesupply.com/logos/large/2x/nfl-1-logo-png-transparent.png))]([youtube_video_url](https://youtu.be/-OwFQcS6Rvc))
+
