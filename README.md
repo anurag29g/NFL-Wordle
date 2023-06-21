@@ -8,5 +8,7 @@
 
 ### Video Demonstration
 
-[![Thumbnail](https://cdn.freebiesupply.com/logos/large/2x/nfl-1-logo-png-transparent.png)](https://youtu.be/-OwFQcS6Rvc)
+<a href="https://youtu.be/-OwFQcS6Rvc">
+  <img src="https://cdn.freebiesupply.com/logos/large/2x/nfl-1-logo-png-transparent.png" alt="Thumbnail" width="200" height="200">
+</a>
 
