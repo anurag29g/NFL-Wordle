@@ -35,14 +35,14 @@ class ViewController: UIViewController {
         field.becomeFirstResponder()
         field.delegate = self
         field.autocorrectionType = .no
-        getPlayer { [weak self] result in
+        getPlayer { [weak self] result in             //stack to load not sure
             switch result {
             case .success(let players):
                 self?.players = players
                 self?.resetGame()
             case .failure(let error):
                 DispatchQueue.main.async {
-                    let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)   //try stack 
+                    let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)                          //stack 
                     let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
                     alert.addAction(okAction)
                     self?.present(alert, animated: true, completion: nil)
@@ -91,7 +91,7 @@ class ViewController: UIViewController {
 
     @IBAction func wrButtTapped() {
         filterPosPlay(position: "Wide Receiver")
-        resetGame()
+        resetGame()               
     }
 
     @IBAction func rbButtTapped() {
