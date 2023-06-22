@@ -16,18 +16,18 @@ struct Player: Decodable {
 class ViewController: UIViewController {
     @IBOutlet var field: UITextField!
     @IBOutlet var button: UIButton!
-    @IBOutlet var playerNameLabel: UILabel!
+    @IBOutlet var playerNamer: UILabel!
     @IBOutlet var hintButton: UIButton!
-    @IBOutlet var quarterbacksButton: UIButton!
-    @IBOutlet var wideReceiversButton: UIButton!
-    @IBOutlet var runningBacksButton: UIButton!
+    @IBOutlet var qbButt: UIButton!
+    @IBOutlet var wrButt: UIButton!
+    @IBOutlet var rbButt: UIButton!
 
     var players: [Player] = []
     var filteredPlayers: [Player] = []
     var depthCharts: [[String: Any]] = []
     var currentPlayerIndex = 0
     var attempts = 0
-    var hintButtonClickedCount = 0
+    var hintbutton = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,14 +35,14 @@ class ViewController: UIViewController {
         field.becomeFirstResponder()
         field.delegate = self
         field.autocorrectionType = .no
-        fetchPlayers { [weak self] result in
+        getPlayer { [weak self] result in
             switch result {
             case .success(let players):
                 self?.players = players
                 self?.resetGame()
             case .failure(let error):
                 DispatchQueue.main.async {
-                    let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                    let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)   //try stack 
                     let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
                     alert.addAction(okAction)
                     self?.present(alert, animated: true, completion: nil)
@@ -63,14 +63,14 @@ class ViewController: UIViewController {
 
         let currentPlayer = filteredPlayers[currentPlayerIndex]
 
-        if hintButtonClickedCount == 0 {
+        if hintbutton == 0 {
             
             let positionType = currentPlayer.position.lowercased().contains("offense") ? "Offensive" : "Defensive"
             showAlert(message: "The player is an \(positionType) player.")
-        } else if hintButtonClickedCount == 1 {
+        } else if hintbutton == 1 {
             
             showAlert(message: "The player's position is \(currentPlayer.position).")
-        } else if hintButtonClickedCount == 2 {
+        } else if hintbutton == 2 {
             
             let playerDepthOrder = getPlayerDepthOrder(playerName: currentPlayer.name)
 
@@ -81,26 +81,26 @@ class ViewController: UIViewController {
             }
         }
 
-        hintButtonClickedCount += 1
+        hintbutton += 1
     }
 
-    @IBAction func quarterbacksButtonTapped() {
-        filterPlayersByPosition(position: "Quarterback")
+    @IBAction func qbButtTapped() {
+        filterPosPlay(position: "Quarterback")
         resetGame()
     }
 
-    @IBAction func wideReceiversButtonTapped() {
-        filterPlayersByPosition(position: "Wide Receiver")
+    @IBAction func wrButtTapped() {
+        filterPosPlay(position: "Wide Receiver")
         resetGame()
     }
 
-    @IBAction func runningBacksButtonTapped() {
-        filterPlayersByPosition(position: "Running Back")
+    @IBAction func rbButtTapped() {
+        filterPosPlay(position: "Running Back")
         resetGame()
     }
 
     //check this later
-    func fetchPlayers(completion: @escaping (Result<[Player], Error>) -> Void) {
+    func getPlayer(completion: @escaping (Result<[Player], Error>) -> Void) {
         let apiKey = "47ed59b2b7174cd0a09a223ba4a563eb"
         let urlString = "https://api.sportsdata.io/v3/nfl/scores/json/DepthCharts?key=\(apiKey)"
 
@@ -157,7 +157,7 @@ class ViewController: UIViewController {
         }.resume()
     }
 
-    func filterPlayersByPosition(position: String) {
+    func filterPosPlay(position: String) {
         if position == "Quarterback" {
             filteredPlayers = players.filter { $0.position.lowercased() == "qb" }
         } else if position == "Wide Receiver" {
@@ -169,18 +169,19 @@ class ViewController: UIViewController {
         }
     }
 
-    func startNewGame() {
-        hintButtonClickedCount = 0
+    func start() {
+        hintbutton = 0
 
         DispatchQueue.main.async {
             if self.filteredPlayers.isEmpty {
                 
-                self.playerNameLabel.text = "No players available in this category"
-                
+                self.playerNamer.text = "No players available in this category"
+                //make sure it randomizes the player at the start
+                //it wasn't randomizing from the start until i clicked the qb, wr, rb button 
             } else {
-                self.currentPlayerIndex = Int.random(in: 0..<self.filteredPlayers.count)
+                self.currentPlayerIndex = Int.random(in: 0..<self.filteredPlayers.count) 
                 let currentPlayer = self.filteredPlayers[self.currentPlayerIndex]
-                self.playerNameLabel.text = currentPlayer.name
+                self.playerNamer.text = currentPlayer.name
                 self.attempts = 0
             }
         }
@@ -190,12 +191,12 @@ class ViewController: UIViewController {
         DispatchQueue.main.async {
             self.attempts = 0
             if self.filteredPlayers.isEmpty {
-                self.players.shuffle()
+                self.players.shuffle() 
                 self.filteredPlayers = self.players
             }
-            self.currentPlayerIndex = Int.random(in: 0..<self.filteredPlayers.count)
+            self.currentPlayerIndex = Int.random(in: 0..<self.filteredPlayers.count)  //try to randomize by prioritizing the best players later or not 
             let currentPlayer = self.filteredPlayers[self.currentPlayerIndex]
-            self.playerNameLabel.text = currentPlayer.name
+            self.playerNamer.text = currentPlayer.name
         }
     }
 
@@ -209,10 +210,10 @@ class ViewController: UIViewController {
         }
 
         let currentPlayer = filteredPlayers[currentPlayerIndex]
-        if guess.lowercased() == currentPlayer.name.lowercased() {
+        if guess.lowercased() == currentPlayer.name.lowercased() { //change this if needed
             let message = "Correct! The player's name is \(currentPlayer.name). Position: \(currentPlayer.position)"
             showAlert(message: message)
-            startNewGame()
+            start()
         } else if attempts > 7 {
             let message = "Game over! The player's name is \(currentPlayer.name). Position: \(currentPlayer.position)"
             showAlert(message: message)
